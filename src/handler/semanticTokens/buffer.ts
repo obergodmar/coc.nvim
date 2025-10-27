@@ -256,33 +256,19 @@ export default class SemanticTokensBuffer implements SyncItem {
    * Single line only.
    */
   private addHighlightItems(highlights: SemanticTokenRange[], range: [number, number, number], tokenType: string, tokenModifiers: string[]): void {
-    // highlight groups:
-    // CocSem + Type + type
-    // CocSem + TypeMod + type + modifier
+    const { combinedModifiers } = this.config
+    const combine = combinedModifiers.some(mod => tokenModifiers.includes(mod))
 
-    let { combinedModifiers } = this.config
-    let combine = false
+    const modifiers = tokenModifiers.map(toHighlightPart).join('')
 
+    // CocSem + TypeMod + type + modifiers
     highlights.push({
       range,
       tokenType,
       combine,
-      hlGroup: HLGROUP_PREFIX + 'Type' + toHighlightPart(tokenType),
+      hlGroup: HLGROUP_PREFIX + 'TypeMod' + toHighlightPart(tokenType) + modifiers,
       tokenModifiers,
     })
-
-    if (tokenModifiers.length) {
-      // only use first modifier to avoid highlight flicking
-      const modifier = tokenModifiers[0]
-      combine = combinedModifiers.includes(modifier)
-      highlights.push({
-        range,
-        tokenType,
-        combine,
-        hlGroup: HLGROUP_PREFIX + 'TypeMod' + toHighlightPart(tokenType) + toHighlightPart(modifier),
-        tokenModifiers,
-      })
-    }
   }
 
   private toHighlightItems(highlights: ReadonlyArray<SemanticTokenRange>, span?: [number, number]): HighlightItem[] {
