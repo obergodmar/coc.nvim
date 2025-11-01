@@ -300,9 +300,9 @@ export default class InlayHintBuffer implements SyncItem {
         label = label.slice(0, -over) + '…'
       }
 
-      if (item.paddingLeft) blocks.push([' ', 'Normal'])
+      if (item.paddingLeft) blocks.push([' ', '']) // with empty hl_group for no background issue
       blocks.push([label, getHighlightGroup(item.kind)])
-      if (item.paddingRight) blocks.push([' ', 'Normal'])
+      if (item.paddingRight) blocks.push([' ', ''])
       if (this.config.position == InlayHintPosition.Eol) {
         col = 0
       }
