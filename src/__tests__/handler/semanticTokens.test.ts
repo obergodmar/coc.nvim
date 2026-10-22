@@ -9,7 +9,7 @@ import { URI } from 'vscode-uri'
 import commandManager from '../../commands'
 import { CompleteOption } from '../../completion/types'
 import events from '../../events'
-import SemanticTokensBuffer, { NAMESPACE, toHighlightPart } from '../../handler/semanticTokens/buffer'
+import SemanticTokensBuffer, { NAMESPACE, SemanticTokenRange, toHighlightPart } from '../../handler/semanticTokens/buffer'
 import SemanticTokens from '../../handler/semanticTokens/index'
 import languages from '../../languages'
 import { disposeAll } from '../../util'
@@ -341,7 +341,7 @@ describe('semanticTokens', () => {
       let buf = await win.buffer
       let lines = await buf.lines
       let content = lines.join('\n')
-      assert.match(content, new RegExp('Type: function\\nModifiers: declaration\\nHighlight group: CocSemTypeFunction'))
+      assert.match(content, new RegExp('Type: function\\nModifiers: declaration\\nHighlight group: CocSemTypeModFunctionDeclaration'))
       await window.moveTo({ line: 1, character: 0 })
       await commandManager.executeCommand('semanticTokens.inspect')
       win = await shared.getFloat()
@@ -743,13 +743,24 @@ describe('semanticTokens', () => {
       assert.deepStrictEqual(l, legend)
     })
 
+    it('should use one highlight with all modifiers', async () => {
+      await createRustBuffer()
+      const curr = await semanticTokens.getCurrentItem()
+      curr.config.combinedModifiers = ['readonly']
+      const highlights: SemanticTokenRange[] = []
+      curr['addHighlightItems'](highlights, [0, 0, 3], 'variable', ['declaration', 'readonly'])
+      assert.strictEqual(highlights.length, 1)
+      assert.strictEqual(highlights[0].hlGroup, 'CocSemTypeModVariableDeclarationReadonly')
+      assert.strictEqual(highlights[0].combine, true)
+    })
+
     it('should doHighlight', async t => {
       await createRustBuffer()
       const doc = await workspace.document
       await nvim.call('CocAction', 'semanticHighlight')
       const highlights = await doc.buffer.getHighlights(NAMESPACE)
       assert.ok(highlights.length > 0)
-      assert.strictEqual(highlights[0].hlGroup, 'CocSemTypeKeyword')
+      assert.strictEqual(highlights[0].hlGroup, 'CocSemTypeModKeyword')
     })
   })
 
