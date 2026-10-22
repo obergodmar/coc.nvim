@@ -1,6 +1,6 @@
 'use strict'
 import { SpawnOptions } from 'child_process'
-import type { DocumentSelector } from 'vscode-languageserver-protocol'
+import type { DocumentFilter, DocumentSelector } from 'vscode-languageserver-protocol'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 import type { WorkspaceFolder } from 'vscode-languageserver-types'
 import { URI } from 'vscode-uri'
@@ -413,8 +413,8 @@ class ServiceManager implements Disposable {
   }
 }
 
-export function documentSelectorToLanguageIds(documentSelector: DocumentSelector): string[] {
-  let res = documentSelector.map(filter => {
+export function documentSelectorToLanguageIds(documentSelector: DocumentSelector | DocumentFilter | string): string[] {
+  let res = toArray(documentSelector).map(filter => {
     if (typeof filter == 'string') {
       return filter
     }

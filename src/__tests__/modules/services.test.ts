@@ -165,6 +165,9 @@ describe('services', () => {
 
     it('should documentSelectorToLanguageIds', async t => {
       assert.deepStrictEqual(documentSelectorToLanguageIds(['vim']), ['vim'])
+      assert.deepStrictEqual(documentSelectorToLanguageIds('lua'), ['lua'])
+      assert.deepStrictEqual(documentSelectorToLanguageIds({ language: 'lua' }), ['lua'])
+      assert.deepStrictEqual(documentSelectorToLanguageIds([{ language: 'lua' }, 'lua', { scheme: 'file' }]), ['lua'])
     })
   })
 

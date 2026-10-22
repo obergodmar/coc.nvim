@@ -1,5 +1,10 @@
 # Changelog
 
+## Fork compatibility fixes
+
+- Accept single-language and single-filter document selectors when listing services,
+  including the selector passed by coc-luals 1.2.1.
+
 Notable changes of coc.nvim:
 
 ## 2026-09-11
